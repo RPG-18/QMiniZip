@@ -1,0 +1,2 @@
+# QMiniZip
+Qt wrapper minizip
