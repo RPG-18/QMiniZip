@@ -6,14 +6,14 @@
 
 #include "zip.h"
 
-#include "Zip.h"
 #include "NewFileInfo.h"
 #include "Compressor.h"
+#include "ZipFile.h"
 
 namespace
 {
 
-void writeData(QMiniZip::Zip& zip, QIODevice& in)
+void writeData(QMiniZip::ZipFile& zip, QIODevice& in)
 {
     std::vector<char> buffer(QMiniZip::Compressor::WRITE_BUFFER_SIZE, 0);
     auto handler = zip.handler();
@@ -39,7 +39,7 @@ void writeData(QMiniZip::Zip& zip, QIODevice& in)
 namespace QMiniZip
 {
 
-bool Compressor::compressFile(Zip& zip, const NewFileInfo& file,
+bool Compressor::compressFile(ZipFile& zip, const NewFileInfo& file,
         const QString& baseDir)
 {
     zip_fileinfo zipInfo =
@@ -73,7 +73,8 @@ bool Compressor::compressFile(Zip& zip, const NewFileInfo& file,
 
     if (err != ZIP_OK)
     {
-        qWarning() << "Error in opening" << zip.zipName() << "in zipfile, code:"
+        qWarning() << "Error in opening"
+                << zip.zipName() << "in zipfile, code:"
                 << err;
         return false;
     }

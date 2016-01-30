@@ -5,7 +5,7 @@
 
 namespace QMiniZip
 {
-class Zip;
+class ZipFile;
 class NewFileInfo;
 
 class Compressor
@@ -13,7 +13,7 @@ class Compressor
 public:
 
     static const size_t WRITE_BUFFER_SIZE = 16384;
-    static bool compressFile(Zip& zip, const NewFileInfo& file, const QString& baseDir = QString());
+    static bool compressFile(ZipFile& zip, const NewFileInfo& file, const QString& baseDir = QString());
 };
 
 } /* namespace QMiniZip */

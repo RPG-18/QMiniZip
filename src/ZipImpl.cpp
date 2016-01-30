@@ -1,22 +1,22 @@
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 
-#include "ZipImpl.h"
+#include "ZipFileImpl.h"
 
 namespace QMiniZip
 {
 
-ZipImpl::ZipImpl(Zip* d) :
+ZipImplImpl::ZipImplImpl(ZipFile* d) :
         m_d(d),
         m_isOpen(false),
-        m_mode(Zip::CREATE),
+        m_mode(ZipFile::CREATE),
         m_zipFh(NULL),
         m_errcode(0),
         m_compressLevel(Z_DEFAULT_COMPRESSION)
 {
 }
 
-ZipImpl::~ZipImpl()
+ZipImplImpl::~ZipImplImpl()
 {
     if(m_isOpen)
     {
@@ -24,17 +24,17 @@ ZipImpl::~ZipImpl()
     }
 }
 
-const QString& ZipImpl::zipName() const
+const QString& ZipImplImpl::zipName() const
 {
     return m_name;
 }
 
-void ZipImpl::setZipName(const QString& name)
+void ZipImplImpl::setZipName(const QString& name)
 {
     m_name = name;
 }
 
-bool ZipImpl::close()
+bool ZipImplImpl::close()
 {
     if(!m_isOpen)
     {
@@ -51,33 +51,33 @@ bool ZipImpl::close()
     return true;
 }
 
-int ZipImpl::lastErrorCode() const
+int ZipImplImpl::lastErrorCode() const
 {
     return m_errcode;
 }
 
-void ZipImpl::resetErrorCode()
+void ZipImplImpl::resetErrorCode()
 {
     m_errcode = 0;
 }
 
-bool ZipImpl::open(Zip::Mode mode)
+bool ZipImplImpl::open(ZipFile::Mode mode)
 {
     resetErrorCode();
 
     int overwrite = 0;
     switch(mode)
     {
-    case Zip::CREATE:
+    case ZipFile::CREATE:
         overwrite = 0;
         break;
-    case Zip::APPEND:
+    case ZipFile::APPEND:
         overwrite = APPEND_STATUS_ADDINZIP;
         break;
     default:
     {
         qWarning()<<"Mode "<<mode<<" not implemented";
-        m_errcode = Zip::NOT_IMPLEMENTED;
+        m_errcode = ZipFile::NOT_IMPLEMENTED;
         return false;
     }
     }
@@ -85,21 +85,21 @@ bool ZipImpl::open(Zip::Mode mode)
     if(m_name.isNull() || m_name.isEmpty())
     {
         qWarning()<<"Zip name not set";
-        m_errcode = Zip::ZIP_NAME_NOT_SET;
+        m_errcode = ZipFile::ZIP_NAME_NOT_SET;
         return false;
     }
 
-    if((mode == Zip::APPEND) && !checkFileExists(m_name))
+    if((mode == ZipFile::APPEND) && !checkFileExists(m_name))
     {
         overwrite = 1;
     }
 
-    if((mode == Zip::CREATE) && checkFileExists(m_name))
+    if((mode == ZipFile::CREATE) && checkFileExists(m_name))
     {
         if(!QFile::remove(m_name))
         {
             qWarning()<<"Can not delete the file"<<m_name;
-            m_errcode = Zip::CAN_NOT_DELETE_FILE;
+            m_errcode = ZipFile::CAN_NOT_DELETE_FILE;
             return false;
         }
     }
@@ -110,7 +110,7 @@ bool ZipImpl::open(Zip::Mode mode)
 
     if (m_zipFh == NULL)
     {
-        m_errcode = Zip::OPEN_FILE;
+        m_errcode = ZipFile::OPEN_FILE;
         qWarning()<<"Error opening file"<<m_name;
         return false;
     }
@@ -120,30 +120,30 @@ bool ZipImpl::open(Zip::Mode mode)
     return true;
 }
 
-Zip::Mode ZipImpl::mode() const
+ZipFile::Mode ZipImplImpl::mode() const
 {
     return m_mode;
 }
 
 
-bool ZipImpl::checkFileExists(const QString& name) const
+bool ZipImplImpl::checkFileExists(const QString& name) const
 {
     return QFile::exists(name);
 }
 
-zipFile ZipImpl::handler() const
+zipFile ZipImplImpl::handler() const
 {
     return m_zipFh;
 }
 
-void ZipImpl::setCompressLevel(quint32 level)
+void ZipImplImpl::setCompressLevel(quint32 level)
 {
     Q_ASSERT(level>=0 && level<9);
 
     m_compressLevel = level;
 }
 
-quint32 ZipImpl::compressLevel() const
+quint32 ZipImplImpl::compressLevel() const
 {
     return m_compressLevel;
 }

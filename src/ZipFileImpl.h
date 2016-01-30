@@ -4,24 +4,24 @@
 #include <QtCore/QString>
 
 #include "zip.h"
-#include "Zip.h"
+#include "ZipFile.h"
 
 namespace QMiniZip
 {
 
-class ZipImpl
+class ZipImplImpl
 {
 public:
 
-    ZipImpl(Zip* d);
-    ~ZipImpl();
+    ZipImplImpl(ZipFile* d);
+    ~ZipImplImpl();
 
     const QString& zipName() const;
     void setZipName(const QString& name);
 
-    bool open(Zip::Mode mode);
+    bool open(ZipFile::Mode mode);
 
-    Zip::Mode mode() const;
+    ZipFile::Mode mode() const;
 
 
     bool close();
@@ -47,9 +47,9 @@ private:
 
 private:
 
-    Zip* m_d;
+    ZipFile* m_d;
     bool m_isOpen;
-    Zip::Mode m_mode;
+    ZipFile::Mode m_mode;
     QString m_name;
 
     zipFile m_zipFh;

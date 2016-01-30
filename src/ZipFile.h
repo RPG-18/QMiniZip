@@ -1,5 +1,4 @@
-#ifndef ZIP_H_
-#define ZIP_H_
+#pragma once
 
 #include <memory>
 
@@ -8,10 +7,11 @@
 namespace QMiniZip
 {
 
-class ZipImpl;
-class Zip
+class ZipImplImpl;
+class ZipFile
 {
-    friend class ZipImpl;
+    friend class ZipImplImpl;
+
 public:
 
     typedef void* ZipHandler;
@@ -33,9 +33,10 @@ public:
         NO_ERROR
     };
 
-    Zip();
+    ZipFile();
+    ~ZipFile();
 
-    Zip(const QString& zipName);
+    ZipFile(const QString& zipName);
 
     bool open(Mode mode);
     Mode mode() const;
@@ -48,14 +49,13 @@ public:
     quint32 compressLevel() const;
     void setCompressLevel(quint32 level);
 
+    ZipFile(const ZipFile&) = delete;
+    ZipFile& operator=(const ZipFile&) = delete;
+
+
 private:
 
-    Q_DISABLE_COPY(Zip)
-
-private:
-    std::shared_ptr<ZipImpl> m_impl;
+    std::unique_ptr<ZipImplImpl> m_impl;
 };
 
 } /* namespace QMiniZip */
-
-#endif

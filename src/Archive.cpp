@@ -1,18 +1,18 @@
 #include <QtCore/QDebug>
 #include <QtCore/QDirIterator>
 
-#include "Zip.h"
 #include "Archive.h"
 #include "Compressor.h"
 #include "NewFileInfo.h"
+#include "ZipFile.h"
 
 namespace QMiniZip
 {
 bool Archive::compressDir(const QString& archive, const QString dir,
         bool recursive)
 {
-    Zip zp(archive);
-    if (!zp.open(Zip::CREATE))
+    ZipFile zp(archive);
+    if (!zp.open(ZipFile::CREATE))
     {
         return false;
     }
