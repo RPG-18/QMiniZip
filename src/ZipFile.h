@@ -7,10 +7,10 @@
 namespace QMiniZip
 {
 
-class ZipImplImpl;
+class ZipFileImpl;
 class ZipFile
 {
-    friend class ZipImplImpl;
+    friend class ZipFileImpl;
 
 public:
 
@@ -55,7 +55,7 @@ public:
 
 private:
 
-    std::unique_ptr<ZipImplImpl> m_impl;
+    std::unique_ptr<ZipFileImpl> m_impl;
 };
 
 } /* namespace QMiniZip */

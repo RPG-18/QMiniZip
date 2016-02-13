@@ -9,12 +9,12 @@
 namespace QMiniZip
 {
 
-class ZipImplImpl
+class ZipFileImpl
 {
 public:
 
-    ZipImplImpl(ZipFile* d);
-    ~ZipImplImpl();
+    ZipFileImpl(ZipFile* d);
+    ~ZipFileImpl();
 
     const QString& zipName() const;
     void setZipName(const QString& name);

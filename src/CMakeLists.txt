@@ -2,7 +2,7 @@ include_directories(minizip)
 add_subdirectory(minizip)
 
 set(SRC ZipFile.cpp
-        ZipImpl.cpp
+        ZipFileImpl.cpp
         Archive.cpp
         Compressor.cpp
         NewFileInfo.cpp)

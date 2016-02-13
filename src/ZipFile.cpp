@@ -6,13 +6,13 @@ namespace QMiniZip
 {
 
 ZipFile::ZipFile() :
-        m_impl(new ZipImplImpl(this))
+        m_impl(new ZipFileImpl(this))
 {
 
 }
 
 ZipFile::ZipFile(const QString& zipName) :
-        m_impl(new ZipImplImpl(this))
+        m_impl(new ZipFileImpl(this))
 {
     m_impl->setZipName(zipName);
 }

@@ -6,7 +6,7 @@
 namespace QMiniZip
 {
 
-ZipImplImpl::ZipImplImpl(ZipFile* d) :
+ZipFileImpl::ZipFileImpl(ZipFile* d) :
         m_d(d),
         m_isOpen(false),
         m_mode(ZipFile::CREATE),
@@ -16,7 +16,7 @@ ZipImplImpl::ZipImplImpl(ZipFile* d) :
 {
 }
 
-ZipImplImpl::~ZipImplImpl()
+ZipFileImpl::~ZipFileImpl()
 {
     if(m_isOpen)
     {
@@ -24,17 +24,17 @@ ZipImplImpl::~ZipImplImpl()
     }
 }
 
-const QString& ZipImplImpl::zipName() const
+const QString& ZipFileImpl::zipName() const
 {
     return m_name;
 }
 
-void ZipImplImpl::setZipName(const QString& name)
+void ZipFileImpl::setZipName(const QString& name)
 {
     m_name = name;
 }
 
-bool ZipImplImpl::close()
+bool ZipFileImpl::close()
 {
     if(!m_isOpen)
     {
@@ -51,17 +51,17 @@ bool ZipImplImpl::close()
     return true;
 }
 
-int ZipImplImpl::lastErrorCode() const
+int ZipFileImpl::lastErrorCode() const
 {
     return m_errcode;
 }
 
-void ZipImplImpl::resetErrorCode()
+void ZipFileImpl::resetErrorCode()
 {
     m_errcode = 0;
 }
 
-bool ZipImplImpl::open(ZipFile::Mode mode)
+bool ZipFileImpl::open(ZipFile::Mode mode)
 {
     resetErrorCode();
 
@@ -120,30 +120,30 @@ bool ZipImplImpl::open(ZipFile::Mode mode)
     return true;
 }
 
-ZipFile::Mode ZipImplImpl::mode() const
+ZipFile::Mode ZipFileImpl::mode() const
 {
     return m_mode;
 }
 
 
-bool ZipImplImpl::checkFileExists(const QString& name) const
+bool ZipFileImpl::checkFileExists(const QString& name) const
 {
     return QFile::exists(name);
 }
 
-zipFile ZipImplImpl::handler() const
+zipFile ZipFileImpl::handler() const
 {
     return m_zipFh;
 }
 
-void ZipImplImpl::setCompressLevel(quint32 level)
+void ZipFileImpl::setCompressLevel(quint32 level)
 {
     Q_ASSERT(level>=0 && level<9);
 
     m_compressLevel = level;
 }
 
-quint32 ZipImplImpl::compressLevel() const
+quint32 ZipFileImpl::compressLevel() const
 {
     return m_compressLevel;
 }
