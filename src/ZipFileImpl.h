@@ -4,6 +4,7 @@
 #include <QtCore/QString>
 
 #include "zip.h"
+#include "unzip.h"
 #include "ZipFile.h"
 
 namespace QMiniZip
@@ -23,7 +24,6 @@ public:
 
     ZipFile::Mode mode() const;
 
-
     bool close();
 
     int lastErrorCode() const;
@@ -40,6 +40,9 @@ public:
     zipFile handler() const;
 
 private:
+
+    bool openOnRead();
+    bool openOnWrite();
 
     void resetErrorCode();
 

@@ -18,7 +18,7 @@ ZipFileImpl::ZipFileImpl(ZipFile* d) :
 
 ZipFileImpl::~ZipFileImpl()
 {
-    if(m_isOpen)
+    if (m_isOpen)
     {
         close();
     }
@@ -36,17 +36,27 @@ void ZipFileImpl::setZipName(const QString& name)
 
 bool ZipFileImpl::close()
 {
-    if(!m_isOpen)
+    if (!m_isOpen)
     {
-        qWarning()<<"Zip"<<m_name<<"not open";
+        qWarning() << "Zip" << m_name << "not open";
         return false;
     }
 
-    int m_errcode = zipClose(m_zipFh, NULL);
-    if (m_errcode != ZIP_OK)
+    if(m_mode == ZipFile::UNZIP)
     {
-        qWarning()<<"Error in closing"<<m_name<<"code:"<<m_errcode;
-        return false;
+        int m_errcode = unzClose(m_zipFh);
+        if (m_errcode != UNZ_OK) {
+            qWarning() << "Error in closing" << m_name << "code:" << m_errcode;
+            return false;
+        }
+    }
+    else
+    {
+        int m_errcode = zipClose(m_zipFh, NULL);
+        if (m_errcode != ZIP_OK) {
+            qWarning() << "Error in closing" << m_name << "code:" << m_errcode;
+            return false;
+        }
     }
     return true;
 }
@@ -65,8 +75,24 @@ bool ZipFileImpl::open(ZipFile::Mode mode)
 {
     resetErrorCode();
 
+    m_mode = mode;
+
+    if (m_mode == ZipFile::UNZIP)
+    {
+        m_isOpen = openOnRead();
+    }
+    else
+    {
+        m_isOpen = openOnWrite();
+    }
+
+    return m_isOpen;
+}
+
+bool ZipFileImpl::openOnWrite()
+{
     int overwrite = 0;
-    switch(mode)
+    switch (m_mode)
     {
     case ZipFile::CREATE:
         overwrite = 0;
@@ -76,29 +102,29 @@ bool ZipFileImpl::open(ZipFile::Mode mode)
         break;
     default:
     {
-        qWarning()<<"Mode "<<mode<<" not implemented";
+        qWarning() << "Mode " << m_mode << " not implemented";
         m_errcode = ZipFile::NOT_IMPLEMENTED;
         return false;
     }
     }
 
-    if(m_name.isNull() || m_name.isEmpty())
+    if (m_name.isNull() || m_name.isEmpty())
     {
-        qWarning()<<"Zip name not set";
+        qWarning() << "Zip name not set";
         m_errcode = ZipFile::ZIP_NAME_NOT_SET;
         return false;
     }
 
-    if((mode == ZipFile::APPEND) && !checkFileExists(m_name))
+    if ((m_mode == ZipFile::APPEND) && !checkFileExists(m_name))
     {
         overwrite = 1;
     }
 
-    if((mode == ZipFile::CREATE) && checkFileExists(m_name))
+    if ((m_mode == ZipFile::CREATE) && checkFileExists(m_name))
     {
-        if(!QFile::remove(m_name))
+        if (!QFile::remove(m_name))
         {
-            qWarning()<<"Can not delete the file"<<m_name;
+            qWarning() << "Can not delete the file" << m_name;
             m_errcode = ZipFile::CAN_NOT_DELETE_FILE;
             return false;
         }
@@ -111,12 +137,25 @@ bool ZipFileImpl::open(ZipFile::Mode mode)
     if (m_zipFh == NULL)
     {
         m_errcode = ZipFile::OPEN_FILE;
-        qWarning()<<"Error opening file"<<m_name;
+        qWarning() << "Error opening file" << m_name;
         return false;
     }
 
-    m_mode = mode;
-    m_isOpen = true;
+    return true;
+}
+
+bool ZipFileImpl::openOnRead()
+{
+    const std::string fileName = m_name.toStdString();
+    m_zipFh = unzOpen64(fileName.c_str());
+
+    if (m_zipFh == NULL)
+    {
+        m_errcode = ZipFile::OPEN_FILE;
+        qWarning() << "Error opening file" << m_name;
+        return false;
+    }
+
     return true;
 }
 
@@ -124,7 +163,6 @@ ZipFile::Mode ZipFileImpl::mode() const
 {
     return m_mode;
 }
-
 
 bool ZipFileImpl::checkFileExists(const QString& name) const
 {
@@ -138,7 +176,7 @@ zipFile ZipFileImpl::handler() const
 
 void ZipFileImpl::setCompressLevel(quint32 level)
 {
-    Q_ASSERT(level>=0 && level<9);
+    Q_ASSERT(level >= 0 && level < 9);
 
     m_compressLevel = level;
 }
